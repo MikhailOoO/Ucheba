@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Симплекс метод</title>
+    <style>
+		table {
+			table-layout: fixed;
+		}
+        input{
+            width: 45px;
+        }
+        #start
+        {
+            width:110px;
+        }
+    </style>
+    <script language="JavaScript">
+		var array;
+		var m = 0, n = 0;
+		var c1 = 0, c2 = 0;
+		var iter = 1;
+        function prog() {
+			var i1 = document.getElementById("id1").value;
+			var j1 = document.getElementById("id2").value;
+            document.getElementById("div1").innerHTML ='Целевая функция<br><br>';
+			for (var j = 0; j < i1; j++) {
+                    document.getElementById("div1").innerHTML += "<input id =c" + j + " type=number value='0'>*x" + (j-(-1));
+                    if (j != i1 - 1) {
+                        document.getElementById("div1").innerHTML +=" + "
+                    }
+                }
+			document.getElementById("div1").innerHTML += " ==> max<br><br>Ограничения<br><br>";
+            for (var i = 0; i < j1; i++) {
+                for (var j = 0; j < i1; j++) {
+                    document.getElementById("div1").innerHTML += "<input id =b" + i + j + " type=number value='0'>*x" + (j-(-1));
+                    if (j != i1 - 1) {
+                        document.getElementById("div1").innerHTML +=" + "
+                    }
+                }
+                document.getElementById("div1").innerHTML += " <= <input id =a" + i + " type=number value='0'><br>";
+            }
+        }
+		function smplxMethod(){
+			var count = 0;
+			const size = c2;
+			var baseIndexes = new Array(size);
+			for(var i = 2; i < n-1; i++){
+				for(var j = 1; j < m-2; j ++){
+					if(array[i][0] == array[1][j]){
+						baseIndexes[count] = j;
+						count++;
+					}
+				}
+			}
+			document.getElementById("result").innerHTML += "<br><br>Вычисляем дельты<br>";
+			for(var i = 1; i < m-1; i ++){
+				array[n-1][i] = 0;
+				document.getElementById("result").innerHTML += ("(Дельта " + i + ") \t");
+				for(var j = 2; j < n-1; j ++){
+					array[n-1][i] -= -(array[j][i] * array[0][baseIndexes[j-2]]);
+					if(j != n-2){
+						document.getElementById("result").innerHTML += (array[j][i] + "*" + array[0][baseIndexes[j-2]] + " + ");
+					}
+					else{
+						document.getElementById("result").innerHTML += (array[j][i] + "*" + array[0][baseIndexes[j-2]]);
+					}
+				}
+				array[n-1][i] -= array[0][i];
+				document.getElementById("result").innerHTML += (" - " + array[0][i] + " = " + array[n-1][i] + "<br>");
+			}
+			var min = 0, index = 0, index2 = 0, mainelem = 0;
+			for(var i = 1; i < m -1; i ++){
+				if(array[n-1][i] < min){
+					min = array[n-1][i];
+					index = i;
+				}
+			}
+			
+			drawTable();
+			if(min < 0){
+				
+				for(var i = 2; i < n-1; i ++){
+					array[i][m-1] = array[i][m-2] / array[i][index];
+				}
+				min = array[2][m-1];
+				index2 = 2;
+				for(var i = 2; i < n-1; i ++){
+					if(array[i][m-1] < min && array[i][m-1]>=0){
+						min = array[i][m-1];
+						index2 = i;
+						
+					}
+				}
+				mainelem = array[index2][index];
+				array[index2][0] = array[1][index];
+				for(var i = 1; i < m-1; i ++){
+					array[index2][i] = array[index2][i] / mainelem
+				}
+				for(var i = 2; i < n-1; i ++){
+					if(i != index2){
+						var test = array[i][index];
+						for(var j = 1; j < m-1; j ++){
+							var test1 = array[i][j];
+							array[i][j] = array[i][j] - (array[index2][j] * test);
+						}	
+					}
+				}
+				for(var i = 2; i < n-1; i++){
+				
+					if(array[i][m-2]<0){
+						alert("Оптимального решения не существует!");
+						document.getElementById("result").innerHTML = '';
+						drawTable();
+						return;
+					}
+				}
+				document.getElementById("result").innerHTML += ("<br><br>Итерация номер " + iter);
+				iter++;
+				drawTable();
+				smplxMethod();
+				return;
+			}
+			else{
+				alert("Найден оптимальный план!");
+				document.getElementById("result").innerHTML += ("<br><br>Текущий план: ( ");
+				for(var i = 2; i <n-1; i ++){
+					document.getElementById("result").innerHTML += (array[i][0] + "->" + array[i][m-2] + " ");
+				}
+				document.getElementById("result").innerHTML += (");");
+				document.getElementById("result").innerHTML += ("<br><br>Значение целевой функции: ");
+				var sum = 0;
+				for(var i = 2; i <n-1; i ++){
+					document.getElementById("result").innerHTML += (array[i][m-2] + "*");
+					for(var j = 1; j <m-2; j ++){
+						if(array[i][0] == array[1][j]){
+							document.getElementById("result").innerHTML += (array[0][j]);
+							sum -= -(array[0][j]*array[i][m-2]);
+						}
+					}
+					if(i != n-2){
+						document.getElementById("result").innerHTML += " + ";
+					}
+				}
+				document.getElementById("result").innerHTML += (" = " + sum);
+				return;
+			}
+		}
+		
+		function drawTable(){
+			const isNumeric = n => !!Number(n);
+			document.getElementById("result").innerHTML += "<br><br>";
+			var i1 = document.getElementById("id1").value;
+			var j1 = document.getElementById("id2").value;
+			var elem = document.querySelector('#result');
+			var table = document.createElement('table');
+			table.border = "1";
+			for (var i = 0; i < n; i++)
+			{
+				var tr = document.createElement('tr');
+				for (var j = 0; j < m; j++)
+				{
+					var td = document.createElement('td');
+					td.innerHTML = Math.floor(array[i][j]*1000)/1000;
+					td.innerHTML = array[i][j];
+					tr.appendChild(td);
+				}
+				table.appendChild(tr);
+			}
+			elem.appendChild(table);
+		
+		}
+		
+        function prog1() {
+			iter = 1;
+			document.getElementById("result").innerHTML = '';
+			var i1 = document.getElementById("id1").value;
+			var j1 = document.getElementById("id2").value;
+			const m1 = 3 - (-i1) - (-j1), n1 = 3 -(-j1);
+			c1 = i1;
+			c2 = j1;
+			array = new Array(n1);
+			for(var i = 0; i < n1; i ++){
+				array[i] = new Array(m1);
+			}
+			for(var i = 0; i < n1; i ++){
+				for(var j = 0; j < m1; j ++){
+					array[i][j] = 0;
+				}
+			}
+			for(var i = 2; i < n1-1; i ++){
+				array[i][m1-2] =  document.getElementById("a" + (i-2)).value;
+			}
+			var count = i1 - (-1);
+			for(var i = 2; i < n1-1; i ++){
+				array[i][0] = "x" + count;
+				count++;
+			}
+			count = 1;
+			for(var i = 1; i <= i1-(-j1); i ++){
+				array[1][i] = "x"+count;
+				count++;
+			}
+			array[1][m1-1] = "Q";
+			array[1][m1-2] = "b";
+			array[0][0] = "C";
+			array[1][0] = "Базис";
+			array[n1-1][0] = "Дельта";
+
+			
+			for(var i = 0; i < i1; i ++){
+				count = document.getElementById("c"+i).value;
+				array[0][i+1] = count;
+			}
+			for(var i = 0; i < j1; i ++){
+				for(var j = 0; j < i1; j ++){
+					array[i-(-2)][j-(-1)] = document.getElementById("b" + i + j).value;
+				}
+			}
+			count = 2;
+			for(var i = 0; i < j1; i ++){
+				array[count][i-(-i1)-(-1)] = 1;
+				count++;
+			}
+			m = m1;
+			n = n1;
+			document.getElementById("result").innerHTML += "<br><br>Изначальная таблица";
+			drawTable();
+			smplxMethod();
+	}
+    </script>
+</head>
+<body>
+	<left>
+    <p>Кол. переменных - <input type="number" min=1 id="id1" value="3"/>
+	<p>Кол. ограничений - <input type="number" min=1 id="id2" value="3"/>
+    <p>
+        <input type="button" id="start" onclick="prog();" value="сгенерировать" />
+        <div id="div1"></div>
+    <p>
+	<hr>
+        <input type="button" id="start" onclick="prog1();" value="решить" />
+        <div id="result"></div>
+	</left>
+</body>
+</html>
