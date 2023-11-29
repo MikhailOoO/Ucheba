@@ -59,14 +59,14 @@
 				for(var j = 2; j < n-1; j ++){
 					array[n-1][i] -= -(array[j][i] * array[0][baseIndexes[j-2]]);
 					if(j != n-2){
-						document.getElementById("result").innerHTML += (array[j][i] + "*" + array[0][baseIndexes[j-2]] + " + ");
+						document.getElementById("result").innerHTML += (Math.floor(array[j][i]*1000)/1000 + "*" + Math.floor(array[0][baseIndexes[j-2]]*1000)/1000 + " + ");
 					}
 					else{
-						document.getElementById("result").innerHTML += (array[j][i] + "*" + array[0][baseIndexes[j-2]]);
+						document.getElementById("result").innerHTML += (Math.floor(array[j][i]*1000)/1000 + "*" + Math.floor(array[0][baseIndexes[j-2]]*1000)/1000);
 					}
 				}
 				array[n-1][i] -= array[0][i];
-				document.getElementById("result").innerHTML += (" - " + array[0][i] + " = " + array[n-1][i] + "<br>");
+				document.getElementById("result").innerHTML += (" - " + Math.floor(array[0][i]*1000)/1000 + " = " + Math.floor(array[n-1][i]*1000)/1000 + "<br>");
 			}
 			var min = 0, index = 0, index2 = 0, mainelem = 0;
 			for(var i = 1; i < m -1; i ++){
@@ -124,16 +124,16 @@
 				alert("Найден оптимальный план!");
 				document.getElementById("result").innerHTML += ("<br><br>Текущий план: ( ");
 				for(var i = 2; i <n-1; i ++){
-					document.getElementById("result").innerHTML += (array[i][0] + "->" + array[i][m-2] + " ");
+					document.getElementById("result").innerHTML += (array[i][0] + "->" + Math.floor(array[i][m-2]*1000)/1000 + " ");
 				}
 				document.getElementById("result").innerHTML += (");");
 				document.getElementById("result").innerHTML += ("<br><br>Значение целевой функции: ");
 				var sum = 0;
 				for(var i = 2; i <n-1; i ++){
-					document.getElementById("result").innerHTML += (array[i][m-2] + "*");
+					document.getElementById("result").innerHTML += (Math.floor(array[i][m-2]*1000)/1000 + "*");
 					for(var j = 1; j <m-2; j ++){
 						if(array[i][0] == array[1][j]){
-							document.getElementById("result").innerHTML += (array[0][j]);
+							document.getElementById("result").innerHTML += (Math.floor(array[0][j]*1000)/1000);
 							sum -= -(array[0][j]*array[i][m-2]);
 						}
 					}
@@ -141,7 +141,7 @@
 						document.getElementById("result").innerHTML += " + ";
 					}
 				}
-				document.getElementById("result").innerHTML += (" = " + sum);
+				document.getElementById("result").innerHTML += (" = " + Math.floor(sum*1000)/1000);
 				return;
 			}
 		}
@@ -160,8 +160,8 @@
 				for (var j = 0; j < m; j++)
 				{
 					var td = document.createElement('td');
-					td.innerHTML = Math.floor(array[i][j]*1000)/1000;
-					td.innerHTML = array[i][j];
+					if((typeof array[i][j]) == "number"){td.innerHTML = Math.floor(array[i][j]*1000)/1000;}
+					else{td.innerHTML = array[i][j];}
 					tr.appendChild(td);
 				}
 				table.appendChild(tr);
@@ -231,8 +231,8 @@
 </head>
 <body>
 	<left>
-    <p>Кол. переменных - <input type="number" min=1 id="id1" value="3"/>
-	<p>Кол. ограничений - <input type="number" min=1 id="id2" value="3"/>
+    <p>Кол. переменных - <input type="number" min=1 id="id1" value="2"/>
+	<p>Кол. ограничений - <input type="number" min=1 id="id2" value="2"/>
     <p>
         <input type="button" id="start" onclick="prog();" value="сгенерировать" />
         <div id="div1"></div>
